@@ -1,36 +1,18 @@
 package AutomationTesting.Vizismart;
 
-import org.testng.annotations.Test;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.time.Duration;
-import java.util.UUID;
-
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Reporter;
-import io.github.bonigarcia.wdm.WebDriverManager;
+import org.testng.annotations.Test;
 
-public class Test1 {
+import java.time.Duration;
+
+public class Test1 extends BaseTest {
 
     @Test
-    public void login_page() throws Exception {
-        WebDriverManager.chromedriver().setup();
-
-        // Use a unique user-data-dir to avoid session conflicts
-        Path userDataDir = Files.createTempDirectory("chrome-profile-" + UUID.randomUUID());
-
-        ChromeOptions options = new ChromeOptions();
-        options.addArguments("--headless=new");
-        options.addArguments("--no-sandbox");
-        options.addArguments("--disable-dev-shm-usage");
-        options.addArguments("--user-data-dir=" + userDataDir.toAbsolutePath());
-
-        ChromeDriver driver = new ChromeDriver(options);
+    public void login_page() {
         Reporter.log("ChromeDriver initialized with unique profile", true);
 
         try {
@@ -64,10 +46,7 @@ public class Test1 {
 
         } catch (Exception e) {
             Reporter.log("Test failed: " + e.getMessage(), true);
-            throw e; // Rethrow to mark test as failed
-        } finally {
-            driver.quit();
-            Reporter.log("Closed the browser and cleaned up driver session", true);
+            throw new RuntimeException("Login Test Failed", e);
         }
     }
 }
