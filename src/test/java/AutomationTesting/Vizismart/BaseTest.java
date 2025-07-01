@@ -1,11 +1,9 @@
 package AutomationTesting.Vizismart;
 
-
-
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.testng.annotations.*;
-
 import io.github.bonigarcia.wdm.WebDriverManager;
 
 public class BaseTest {
@@ -14,7 +12,18 @@ public class BaseTest {
     @BeforeClass
     public void setUp() {
         WebDriverManager.chromedriver().setup();
-        driver = new ChromeDriver();
+
+        ChromeOptions options = new ChromeOptions();
+
+        // Check if running in CI
+        if (System.getenv("CI") != null) {
+            options.addArguments("--headless=new"); // Required for GitHub Actions
+            options.addArguments("--no-sandbox");
+            options.addArguments("--disable-dev-shm-usage");
+            options.addArguments("--disable-gpu"); // Optional
+        }
+
+        driver = new ChromeDriver(options);
         driver.manage().window().maximize();
         System.out.println("✅ Browser launched");
     }
