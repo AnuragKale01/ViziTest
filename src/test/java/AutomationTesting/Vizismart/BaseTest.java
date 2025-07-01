@@ -3,11 +3,17 @@ package AutomationTesting.Vizismart;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
-import org.testng.annotations.*;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeMethod;
+
+import io.github.bonigarcia.wdm.WebDriverManager;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Duration;
 
 public class BaseTest {
 
@@ -16,24 +22,32 @@ public class BaseTest {
 
     @BeforeClass
     public void beforeClass() {
-        // You can add class-level setup here if needed
+        // Global setup for all tests in the class
         System.out.println("BeforeClass: Starting test class setup.");
     }
 
     @BeforeMethod
     public void setUp() throws IOException {
+        // Ensure the correct driver binary is available
+        WebDriverManager.chromedriver().setup();
+
         ChromeOptions options = new ChromeOptions();
 
-        // Create a unique temporary directory for user-data
+        // Create a unique temporary directory for user-data to avoid conflicts
         tempProfile = Files.createTempDirectory("chrome-user-data");
-        options.addArguments("--user-data-dir=" + tempProfile.toAbsolutePath().toString());
+        options.addArguments("--user-data-dir=" + tempProfile.toAbsolutePath());
 
+        // CI and stability options
+        options.addArguments("--headless=new");              // headless mode
+        options.addArguments("--no-sandbox");                // required in CI
+        options.addArguments("--disable-dev-shm-usage");     // reduce resource usage
+        options.addArguments("--disable-gpu");               // recommended for headless
         options.addArguments("--remote-allow-origins=*");
-        options.addArguments("--disable-dev-shm-usage");
-        options.addArguments("--no-sandbox");
-        options.addArguments("--headless"); // comment this if you want to see browser UI
 
         driver = new ChromeDriver(options);
+        driver.manage().window().maximize();
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
+
         System.out.println("BeforeMethod: Driver initialized.");
     }
 
@@ -47,11 +61,11 @@ public class BaseTest {
 
     @AfterClass
     public void afterClass() {
-        // Optionally delete the temporary profile
+        // Clean up the temporary profile directory
         if (tempProfile != null && Files.exists(tempProfile)) {
             try {
                 Files.walk(tempProfile)
-                     .sorted((a, b) -> b.compareTo(a)) // delete files before dirs
+                     .sorted((a, b) -> b.compareTo(a))
                      .forEach(path -> {
                          try {
                              Files.delete(path);
