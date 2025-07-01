@@ -30,14 +30,14 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
 
-      - name: Set Chrome options for headless test
+      - name: Install Google Chrome
         run: |
           sudo apt-get update
           sudo apt-get install -y google-chrome-stable
         continue-on-error: true
 
-      - name: Run tests with Maven
-        run: mvn clean test -Dtest=*Test
+      - name: Run TestNG tests with Maven
+        run: mvn clean test -Dsurefire.suiteXmlFiles=src/test/resources/testng.xml
 
       - name: Upload test results (optional)
         if: always()
@@ -45,4 +45,3 @@ jobs:
         with:
           name: test-results
           path: target/surefire-reports/
-
