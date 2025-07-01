@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testng-results ignored="0" total="3" passed="3" failed="0" skipped="0">
+  <reporter-output>
+    <line>
+      <![CDATA[ChromeDriver initialized]]>
+    </line>
+    <line>
+      <![CDATA[Navigated to Login page]]>
+    </line>
+    <line>
+      <![CDATA[Entered Email]]>
+    </line>
+    <line>
+      <![CDATA[Entered Password]]>
+    </line>
+    <line>
+      <![CDATA[Clicked on Login button]]>
+    </line>
+    <line>
+      <![CDATA[Waited for 2 seconds]]>
+    </line>
+    <line>
+      <![CDATA[Clicked on Humburger Menu]]>
+    </line>
+    <line>
+      <![CDATA[Profile Option Menu Clicked]]>
+    </line>
+    <line>
+      <![CDATA[name]]>
+    </line>
+    <line>
+      <![CDATA[Role Has entered]]>
+    </line>
+    <line>
+      <![CDATA[Company Has entered]]>
+    </line>
+    <line>
+      <![CDATA[PhoneNumber Has entered]]>
+    </line>
+    <line>
+      <![CDATA[Unchecked Sms Checkbox]]>
+    </line>
+    <line>
+      <![CDATA[Done Button Clicked]]>
+    </line>
+  </reporter-output>
+  <suite started-at="2025-06-25T14:59:49 IST" name="Default suite" finished-at="2025-06-25T15:00:16 IST" duration-ms="26588">
+    <groups>
+    </groups>
+    <test started-at="2025-06-25T14:59:49 IST" name="Default test" finished-at="2025-06-25T15:00:16 IST" duration-ms="26588">
+      <class name="EditProfile.PropertyManagerProfile">
+        <test-method signature="login()[pri:0, instance:EditProfile.PropertyManagerProfile@7651218e]" started-at="2025-06-25T14:59:49 IST" name="login" finished-at="2025-06-25T14:59:56 IST" duration-ms="6582" status="PASS">
+          <reporter-output>
+            <line>
+              <![CDATA[ChromeDriver initialized]]>
+            </line>
+            <line>
+              <![CDATA[Navigated to Login page]]>
+            </line>
+            <line>
+              <![CDATA[Entered Email]]>
+            </line>
+            <line>
+              <![CDATA[Entered Password]]>
+            </line>
+            <line>
+              <![CDATA[Clicked on Login button]]>
+            </line>
+            <line>
+              <![CDATA[Waited for 2 seconds]]>
+            </line>
+          </reporter-output>
+        </test-method> <!-- login -->
+        <test-method signature="HumburgerMenu()[pri:0, instance:EditProfile.PropertyManagerProfile@7651218e]" started-at="2025-06-25T14:59:56 IST" name="HumburgerMenu" finished-at="2025-06-25T15:00:06 IST" depends-on-methods="EditProfile.PropertyManagerProfile.login" duration-ms="10357" status="PASS">
+          <reporter-output>
+            <line>
+              <![CDATA[Clicked on Humburger Menu]]>
+            </line>
+            <line>
+              <![CDATA[Profile Option Menu Clicked]]>
+            </line>
+          </reporter-output>
+        </test-method> <!-- HumburgerMenu -->
+        <test-method signature="EditProfile()[pri:0, instance:EditProfile.PropertyManagerProfile@7651218e]" started-at="2025-06-25T15:00:06 IST" name="EditProfile" finished-at="2025-06-25T15:00:16 IST" depends-on-methods="EditProfile.PropertyManagerProfile.HumburgerMenu" duration-ms="9584" status="PASS">
+          <reporter-output>
+            <line>
+              <![CDATA[name]]>
+            </line>
+            <line>
+              <![CDATA[Role Has entered]]>
+            </line>
+            <line>
+              <![CDATA[Company Has entered]]>
+            </line>
+            <line>
+              <![CDATA[PhoneNumber Has entered]]>
+            </line>
+            <line>
+              <![CDATA[Unchecked Sms Checkbox]]>
+            </line>
+            <line>
+              <![CDATA[Done Button Clicked]]>
+            </line>
+          </reporter-output>
+        </test-method> <!-- EditProfile -->
+      </class> <!-- EditProfile.PropertyManagerProfile -->
+    </test> <!-- Default test -->
+  </suite> <!-- Default suite -->
+</testng-results>
