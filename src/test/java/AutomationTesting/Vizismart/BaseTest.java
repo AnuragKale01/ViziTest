@@ -9,74 +9,50 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
-
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.time.Duration;
 
 public class BaseTest {
 
     protected WebDriver driver;
-    private Path tempProfile; // to clean up if needed
 
     @BeforeClass
     public void beforeClass() {
-        // Global setup for all tests in the class
-        System.out.println("BeforeClass: Starting test class setup.");
+        // Class-level setup if required
+        System.out.println("[BaseTest] BeforeClass: Test suite setup starting...");
     }
 
     @BeforeMethod
-    public void setUp() throws IOException {
-        // Ensure the correct driver binary is available
+    public void setUp() {
+        // Download and configure ChromeDriver
         WebDriverManager.chromedriver().setup();
 
         ChromeOptions options = new ChromeOptions();
-
-        // Create a unique temporary directory for user-data to avoid conflicts
-        tempProfile = Files.createTempDirectory("chrome-user-data");
-        options.addArguments("--user-data-dir=" + tempProfile.toAbsolutePath());
-
-        // CI and stability options
-        options.addArguments("--headless=new");              // headless mode
-        options.addArguments("--no-sandbox");                // required in CI
-        options.addArguments("--disable-dev-shm-usage");     // reduce resource usage
-        options.addArguments("--disable-gpu");               // recommended for headless
+        // CI-friendly flags
+        options.addArguments("--headless=new");          // run in headless mode
+        options.addArguments("--no-sandbox");           // disable sandbox for Linux CI
+        options.addArguments("--disable-dev-shm-usage"); // overcome limited /dev/shm
+        options.addArguments("--disable-gpu");          // applicable in some environments
+        options.addArguments("--incognito");            // use incognito to avoid profile locks
         options.addArguments("--remote-allow-origins=*");
 
+        // Initialize driver with options
         driver = new ChromeDriver(options);
-        driver.manage().window().maximize();
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
 
-        System.out.println("BeforeMethod: Driver initialized.");
+        System.out.println("[BaseTest] BeforeMethod: ChromeDriver initialized in headless mode.");
     }
 
     @AfterMethod
     public void tearDown() {
         if (driver != null) {
             driver.quit();
-            System.out.println("AfterMethod: Driver quit.");
+            System.out.println("[BaseTest] AfterMethod: ChromeDriver session ended.");
         }
     }
 
     @AfterClass
     public void afterClass() {
-        // Clean up the temporary profile directory
-        if (tempProfile != null && Files.exists(tempProfile)) {
-            try {
-                Files.walk(tempProfile)
-                     .sorted((a, b) -> b.compareTo(a))
-                     .forEach(path -> {
-                         try {
-                             Files.delete(path);
-                         } catch (IOException e) {
-                             System.err.println("Failed to delete: " + path);
-                         }
-                     });
-                System.out.println("AfterClass: Temporary profile deleted.");
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+        // Class-level teardown if required
+        System.out.println("[BaseTest] AfterClass: Test suite teardown complete.");
     }
 }
