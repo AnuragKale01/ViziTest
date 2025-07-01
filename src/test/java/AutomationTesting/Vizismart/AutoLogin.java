@@ -8,7 +8,7 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.testng.Reporter;
 import org.testng.annotations.Test;
 import io.github.bonigarcia.wdm.WebDriverManager;
-public class AutoLogin {
+public class AutoLogin extends BaseTest {
 	@Test
     public void login_page() throws InterruptedException {
         WebDriverManager.chromedriver().setup();
@@ -37,6 +37,6 @@ public class AutoLogin {
         Reporter.log("Waited for 2 seconds", true);
  
         driver.close();
-        Reporter.log("Closed the browser", true);
+//        Reporter.log("Closed the browser", true);
     }
 }
