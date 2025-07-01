@@ -15,79 +15,95 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
 
+/**
+ * BaseTest provides setup and teardown methods for WebDriver-based tests.
+ * ChromeDriver runs in headless mode with CI-friendly options.
+ */
 public class BaseTest {
 
     protected WebDriver driver;
-    private Path tempProfileDir; // used for cleanup if needed
+    private Path tempProfileDir;
 
+    /**
+     * Executed once before any test methods in the class.
+     */
     @BeforeClass
     public void beforeClass() {
-        // Class-level setup if required
-        System.out.println("[BaseTest] BeforeClass: Test suite setup starting...");
+        System.out.println("[BaseTest] BeforeClass: Initializing test suite...");
     }
 
+    /**
+     * Executed before each test method. Sets up a headless ChromeDriver with a temp profile.
+     */
     @BeforeMethod
     public void setUp() {
         try {
-            // Download and configure ChromeDriver
             WebDriverManager.chromedriver().setup();
 
             ChromeOptions options = new ChromeOptions();
-            // CI-friendly flags
-            options.addArguments("--headless=new");          // run in headless mode
-            options.addArguments("--no-sandbox");            // disable sandbox for Linux CI
-            options.addArguments("--disable-dev-shm-usage"); // overcome limited /dev/shm
-            options.addArguments("--disable-gpu");           // applicable in some environments
-            options.addArguments("--incognito");             // use incognito to avoid profile locks
+            options.addArguments("--headless=new");
+            options.addArguments("--no-sandbox");
+            options.addArguments("--disable-dev-shm-usage");
+            options.addArguments("--disable-gpu");
+            options.addArguments("--incognito");
             options.addArguments("--remote-allow-origins=*");
 
-            // ✅ Create unique temp directory for user data
+            // Create isolated user profile directory
             tempProfileDir = Files.createTempDirectory("chrome-profile");
-            options.addArguments("--user-data-dir=" + tempProfileDir.toString());
+            options.addArguments("--user-data-dir=" + tempProfileDir);
 
-            // Initialize driver
             driver = new ChromeDriver(options);
             driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
 
-            System.out.println("[BaseTest] BeforeMethod: ChromeDriver initialized in headless mode.");
+            System.out.println("[BaseTest] BeforeMethod: ChromeDriver initialized with temp profile.");
         } catch (IOException e) {
-            System.err.println("[BaseTest] Error creating temporary profile directory: " + e.getMessage());
+            System.err.println("[BaseTest] Failed to create temp profile directory: " + e.getMessage());
             e.printStackTrace();
         } catch (Exception e) {
-            System.err.println("[BaseTest] Error during Chrome setup: " + e.getMessage());
+            System.err.println("[BaseTest] Error during WebDriver setup: " + e.getMessage());
             e.printStackTrace();
         }
     }
 
+    /**
+     * Executed after each test method. Quits the driver and cleans up the temp profile directory.
+     */
     @AfterMethod
     public void tearDown() {
+        // Quit WebDriver
         if (driver != null) {
-            driver.quit();
-            System.out.println("[BaseTest] AfterMethod: ChromeDriver session ended.");
+            try {
+                driver.quit();
+                System.out.println("[BaseTest] AfterMethod: ChromeDriver closed.");
+            } catch (Exception e) {
+                System.err.println("[BaseTest] Failed to quit driver: " + e.getMessage());
+            }
         }
 
-        // Optional: Cleanup temporary profile directory
+        // Delete temporary profile directory
         if (tempProfileDir != null) {
             try {
                 Files.walk(tempProfileDir)
-                        .sorted((a, b) -> b.compareTo(a)) // delete children before parents
+                        .sorted((a, b) -> b.compareTo(a)) // Delete children before parents
                         .forEach(path -> {
                             try {
                                 Files.deleteIfExists(path);
                             } catch (IOException e) {
-                                System.err.println("[BaseTest] Failed to delete temp file: " + path);
+                                System.err.println("[BaseTest] Could not delete: " + path + " - " + e.getMessage());
                             }
                         });
-                System.out.println("[BaseTest] AfterMethod: Temp profile directory cleaned up.");
+                System.out.println("[BaseTest] AfterMethod: Temporary profile directory cleaned.");
             } catch (IOException e) {
-                System.err.println("[BaseTest] Error cleaning up temp profile directory: " + e.getMessage());
+                System.err.println("[BaseTest] Error during temp profile cleanup: " + e.getMessage());
             }
         }
     }
 
+    /**
+     * Executed once after all test methods in the class have run.
+     */
     @AfterClass
     public void afterClass() {
-        // Class-level teardown if required
-        System.out.println("[BaseTest] AfterClass: Test suite teardown complete.");
+        System.out.println("[BaseTest] AfterClass: Test suite completed.");
     }
 }
