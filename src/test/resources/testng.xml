@@ -2,8 +2,8 @@
 <suite name="Suite">
   <test thread-count="5" name="Test">
     <classes>
-      <class name="AutomationTesting.Vizismart.Add_multifamily_Property"/>
-      <class name="AutomationTesting.Vizismart.DownloadFile"/>
+      <class name="AutomationTesting.Vizismart.AutoLogin"/>
+      <class name="AutomationTesting.Vizismart.Test1"/>
     </classes>
   </test>
 </suite>
