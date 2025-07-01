@@ -11,54 +11,52 @@ import org.testng.annotations.Test;
 
 public class DownloadFile extends BaseTest {
 
+    private void scrollTo(WebElement element) {
+        ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", element);
+    }
+
     @Test
-    public void login_and_download() throws InterruptedException {
+    public void login_and_download() {
         Reporter.log("Starting DownloadFile test", true);
 
         driver.get("https://dev.vizismart.com/login");
         Reporter.log("Navigated to Login page", true);
 
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(15));
+
         // Login
-        // WebElement emailField = driver.findElement(By.xpath("//*[@id='root']/div/div[1]/div/div/form/input"));
-        WebElement emailField = driver.findElement(By.cssSelector("input[type='email']"));
-        emailField.sendKeys("kalyanideshmukh778+5@gmail.com");
+        driver.findElement(By.cssSelector("input[type='email']")).sendKeys("kalyanideshmukh778+5@gmail.com");
         Reporter.log("Entered email", true);
 
-        // WebElement password = driver.findElement(By.xpath("//*[@id='root']/div/div[1]/div/div/form/div/input"));
-        WebElement password = driver.findElement(By.cssSelector("input[type='password']"));
-        password.sendKeys("12345678");
+        driver.findElement(By.cssSelector("input[type='password']")).sendKeys("12345678");
         Reporter.log("Entered password", true);
 
-        // WebElement loginBtn = driver.findElement(By.xpath("//button[@type='submit']"));
-        WebElement loginBtn = driver.findElement(By.cssSelector("button[type='submit']"));
-        loginBtn.click();
+        driver.findElement(By.cssSelector("button[type='submit']")).click();
         Reporter.log("Clicked on Login button", true);
 
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(15));
         wait.until(ExpectedConditions.urlContains("/properties"));
-        Reporter.log("Landed on Properties page", true);
+        Reporter.log("Successfully navigated to Properties page", true);
 
-        // SVG icon for option menu
-        // WebElement svgIcon = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//*[name()='svg' and contains(@class,'scale-150') and contains(@class,'text-white')]")));
+        // Click SVG option icon
         WebElement svgIcon = wait.until(ExpectedConditions.elementToBeClickable(
             By.cssSelector("svg.scale-150.text-white")));
         svgIcon.click();
         Reporter.log("Clicked on Option Menu SVG icon", true);
 
-        // WebElement manageKBase = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@id='root']/div/div[1]/div/div[3]/div/div[2]")));
+        // Click Manage KBase
         WebElement manageKBase = wait.until(ExpectedConditions.elementToBeClickable(
-            By.xpath("//div[text()='Manage KBase']"))); // Better than full path if text is unique
+            By.xpath("//div[text()='Manage KBase']")));
         manageKBase.click();
-        Reporter.log("Clicked on Manage KBase button", true);
+        Reporter.log("Clicked on 'Manage KBase'", true);
 
-        // WebElement downloadLink = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@id='root']/div/div[3]/div/div/div/div[1]/table/tbody/tr[1]/td[4]/a")));
+        // Click download link in the first row
         WebElement downloadLink = wait.until(ExpectedConditions.elementToBeClickable(
             By.cssSelector("table tbody tr:first-child td:nth-child(4) a")));
-        ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", downloadLink);
+        scrollTo(downloadLink);
         downloadLink.click();
-        Reporter.log("Clicked download link on first row", true);
+        Reporter.log("Clicked download link in first row", true);
 
-        // Optional: wait for download completion indicator if available
-        // wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("download-success-alert")));
+        // Optional: Add download verification logic if the browser or app provides feedback
+        // Example: wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("download-complete")));
     }
 }
