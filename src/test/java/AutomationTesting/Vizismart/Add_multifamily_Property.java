@@ -13,12 +13,12 @@ import org.testng.annotations.Test;
  
 import io.github.bonigarcia.wdm.WebDriverManager;
  
-public class Add_multifamily_Property {
+public class Add_multifamily_Property extends BaseTest {
 	
 	@Test
-	public void add() throws InterruptedException {
-        WebDriverManager.chromedriver().setup();
-        ChromeDriver driver = new ChromeDriver();
+	public void add() throws InterruptedException  {
+//        WebDriverManager.chromedriver().setup();
+//        ChromeDriver driver = new ChromeDriver();
         Reporter.log("ChromeDriver initialized", true);
  
         driver.get("https://dev.vizismart.com/login");

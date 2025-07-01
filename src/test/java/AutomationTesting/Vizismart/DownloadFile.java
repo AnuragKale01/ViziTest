@@ -15,11 +15,11 @@ import com.github.dockerjava.api.model.Driver;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
 
-public class DownloadFile {
+public class DownloadFile extends BaseTest {
 	@Test
 	public void login_page() throws InterruptedException {
-		WebDriverManager.chromedriver().setup();
-		ChromeDriver driver = new ChromeDriver();
+//		WebDriverManager.chromedriver().setup();
+//		ChromeDriver driver = new ChromeDriver();
 		Reporter.log("ChromeDriver initialized", true);
 
 		driver.get("https://dev.vizismart.com/login");
