@@ -1,38 +1,43 @@
-package AutomationTesting.Vizismart;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeMethod;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
-import org.testng.annotations.*;
-import io.github.bonigarcia.wdm.WebDriverManager;
 
 public class BaseTest {
+
     protected WebDriver driver;
 
-    @BeforeClass
-    public void setUp() {
-        WebDriverManager.chromedriver().setup();
-
+    @BeforeMethod
+	@BeforeClass
+    public void setUp() throws IOException {
         ChromeOptions options = new ChromeOptions();
 
-        // Check if running in CI
-        if (System.getenv("CI") != null) {
-            options.addArguments("--headless=new"); // Required for GitHub Actions
-            options.addArguments("--no-sandbox");
-            options.addArguments("--disable-dev-shm-usage");
-            options.addArguments("--disable-gpu"); // Optional
-        }
+        // Create a unique temporary directory for user-data
+        Path tempProfile = Files.createTempDirectory("chrome-user-data");
+        options.addArguments("--user-data-dir=" + tempProfile.toAbsolutePath().toString());
+
+        // Other options if needed
+        options.addArguments("--remote-allow-origins=*");
+        options.addArguments("--disable-dev-shm-usage");
+        options.addArguments("--no-sandbox");
+        options.addArguments("--headless"); // if you're on a CI server
 
         driver = new ChromeDriver(options);
-        driver.manage().window().maximize();
-        System.out.println("✅ Browser launched");
     }
 
-    @AfterClass
+    @AfterMethod
+	@AfterClass
     public void tearDown() {
         if (driver != null) {
             driver.quit();
-            System.out.println("🚪 Browser closed");
         }
     }
 }
