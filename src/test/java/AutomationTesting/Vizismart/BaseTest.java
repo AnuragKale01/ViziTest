@@ -3,84 +3,85 @@ package AutomationTesting.Vizismart;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.*;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.nio.file.*;
 import java.time.Duration;
+import java.util.UUID;
 
-/**
- * BaseTest provides setup and teardown methods for WebDriver-based tests.
- * ChromeDriver runs in headless mode with CI-friendly options.
- */
 public class BaseTest {
 
     protected WebDriver driver;
     private Path tempProfileDir;
 
-    /**
-     * Executed once before any test methods in the class.
-     */
     @BeforeClass
     public void beforeClass() {
         System.out.println("[BaseTest] BeforeClass: Initializing test suite...");
     }
 
-    /**
-     * Executed before each test method. Sets up a headless ChromeDriver with a temp profile.
-     */
     @BeforeMethod
     public void setUp() {
-        try {
-            WebDriverManager.chromedriver().setup();
+        int maxRetries = 3;
+        int attempt = 0;
 
-            ChromeOptions options = new ChromeOptions();
-            options.addArguments("--headless=new");
-            options.addArguments("--no-sandbox");
-            options.addArguments("--disable-dev-shm-usage");
-            options.addArguments("--disable-gpu");
-            options.addArguments("--incognito");
-            options.addArguments("--remote-allow-origins=*");
+        while (attempt < maxRetries) {
+            try {
+                WebDriverManager.chromedriver().setup();
 
-            // Create isolated user profile directory
-            tempProfileDir = Files.createTempDirectory("chrome-profile");
-            options.addArguments("--user-data-dir=" + tempProfileDir);
+                ChromeOptions options = new ChromeOptions();
+                options.addArguments("--headless=new");
+                options.addArguments("--no-sandbox");
+                options.addArguments("--disable-dev-shm-usage");
+                options.addArguments("--disable-gpu");
+                options.addArguments("--incognito");
+                options.addArguments("--remote-allow-origins=*");
 
-            driver = new ChromeDriver(options);
-            driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
+                // Create unique temp user profile
+                tempProfileDir = Files.createTempDirectory("chrome-profile-" + UUID.randomUUID());
+                options.addArguments("--user-data-dir=" + tempProfileDir.toAbsolutePath());
 
-            System.out.println("[BaseTest] BeforeMethod: ChromeDriver initialized with temp profile.");
-        } catch (IOException e) {
-            System.err.println("[BaseTest] Failed to create temp profile directory: " + e.getMessage());
-            e.printStackTrace();
-        } catch (Exception e) {
-            System.err.println("[BaseTest] Error during WebDriver setup: " + e.getMessage());
-            e.printStackTrace();
+                driver = new ChromeDriver(options);
+                driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
+
+                System.out.println("[BaseTest] ChromeDriver initialized with profile: " + tempProfileDir);
+                break;
+
+            } catch (Exception e) {
+                System.err.println("[BaseTest] Attempt " + (attempt + 1) + " failed: " + e.getMessage());
+                e.printStackTrace();
+
+                cleanupTempProfile(); // Clean up in case partially created
+
+                attempt++;
+                if (attempt < maxRetries) {
+                    try {
+                        Thread.sleep(2000); // Wait before retry
+                    } catch (InterruptedException ignored) {}
+                } else {
+                    throw new RuntimeException("Failed to initialize WebDriver after " + maxRetries + " attempts.", e);
+                }
+            }
         }
     }
 
-    /**
-     * Executed after each test method. Quits the driver and cleans up the temp profile directory.
-     */
     @AfterMethod
     public void tearDown() {
-        // Quit WebDriver
         if (driver != null) {
             try {
                 driver.quit();
-                System.out.println("[BaseTest] AfterMethod: ChromeDriver closed.");
+                System.out.println("[BaseTest] ChromeDriver closed.");
             } catch (Exception e) {
                 System.err.println("[BaseTest] Failed to quit driver: " + e.getMessage());
             }
         }
 
-        // Delete temporary profile directory
+        cleanupTempProfile();
+    }
+
+    private void cleanupTempProfile() {
         if (tempProfileDir != null) {
             try {
                 Files.walk(tempProfileDir)
@@ -92,16 +93,13 @@ public class BaseTest {
                                 System.err.println("[BaseTest] Could not delete: " + path + " - " + e.getMessage());
                             }
                         });
-                System.out.println("[BaseTest] AfterMethod: Temporary profile directory cleaned.");
+                System.out.println("[BaseTest] Temporary profile directory cleaned: " + tempProfileDir);
             } catch (IOException e) {
                 System.err.println("[BaseTest] Error during temp profile cleanup: " + e.getMessage());
             }
         }
     }
 
-    /**
-     * Executed once after all test methods in the class have run.
-     */
     @AfterClass
     public void afterClass() {
         System.out.println("[BaseTest] AfterClass: Test suite completed.");
