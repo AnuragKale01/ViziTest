@@ -12,80 +12,84 @@ import org.testng.annotations.Test;
 
 public class Add_multifamily_Property extends BaseTest {
 
-    private void scrollAndClick(WebElement element) {
-        ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", element);
-        try {
-            element.click();
-        } catch (Exception e) {
-            ((JavascriptExecutor) driver).executeScript("arguments[0].click();", element);
-        }
-    }
+	public void add_multi_family_property() throws InterruptedException {
+//      WebDriverManager.chromedriver().setup();
+//      ChromeDriver driver = new ChromeDriver();
+      Reporter.log("ChromeDriver initialized", true);
+ 
+      driver.get("https://dev.vizismart.com/login");
+      Reporter.log("Navigated to Login page", true);
+      
+      driver.manage().window().maximize();
+      
+      // Login as property manager process ...
+      WebElement emailField = driver.findElement(By.xpath("//*[@id=\"root\"]/div/div[1]/div/div/form/input"));
+      emailField.sendKeys("kalyanideshmukh778+11@gmail.com");
+      Reporter.log("Entered email address", true);
+ 
+      WebElement password = driver.findElement(By.xpath("//*[@id=\"root\"]/div/div[1]/div/div/form/div/input"));
+      password.sendKeys("12345678");
+      Reporter.log("Entered Password", true);
+      
+      WebElement Login = driver.findElement(By.xpath("//button[@type=\"submit\"]"));
+      Login.click();
+      Reporter.log("Clicked on Login button", true);
+      
+      // Add multi family process ...
+      Thread.sleep(1000);
+      WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+      WebElement Property_icon = wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//*[@id=\"Properties6\"]")));
+      ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", Property_icon);
+      Property_icon.click();
+      Reporter.log("Clicked on Property icon", true);
+      
+      Thread.sleep(1000);       
+      WebElement MultiFamily =wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//*[@id=\"Multi Family\"]")));
+      MultiFamily.click();
+      Reporter.log("Click on multi-familty property", true);
+      
+      WebElement Address = wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//*[@id=\"root\"]/div/div[3]/div/div/form/div[1]/input[1]")));
+      // Scroll to the Address field
+      ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", Address);
+      Address.sendKeys("Five Garden plaza");
+      Reporter.log("Entered the address.", true);
+      
+      WebElement City = wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//*[@id=\"root\"]/div/div[3]/div/div/form/div[1]/input[2]")));
+      // Scroll to the City field
+      ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", City);
+      City.sendKeys("Pune");
+      Reporter.log("Entered the city.", true);
+      
+      WebElement State = wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//*[@id=\"root\"]/div/div[3]/div/div/form/div[1]/input[3]")));
+      // Scroll to the State field
+      ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", State);
+      State.sendKeys("Maharashtra");
+      Reporter.log("Entered the state.", true);
+      
+      WebElement Zipcode = wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//*[@id=\"root\"]/div/div[3]/div/div/form/div[1]/input[4]")));
+      // Scroll to the Zipcode field
+      ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", Zipcode);
+      Zipcode.sendKeys("411057");
+      Reporter.log("Entered the zip code.", true);
+ 
+      
+      //add units...
+      WebElement unit1= wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//*[@id=\"add14\"]")));
+      unit1.sendKeys("1");
+      WebElement addunits = wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//*[@id=\"add16\"]")));
+      addunits.click();
+      WebElement unit2= wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("/html/body/div/div/div[3]/div/div/form/div[1]/div[2]/div[2]/input")));
+      unit2.sendKeys("2");
+      
+      
+      WebElement SaveBtn = wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//*[@id=\"add23\"]")));
+      // Scroll to the Save button
+      ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", SaveBtn);
+      SaveBtn.click();
+      Reporter.log("Clicked on save button", true);
+      
+ 
+      Thread.sleep(2000);
 
-    private void scrollAndSendKeys(WebElement element, String text) {
-        ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", element);
-        element.sendKeys(text);
-    }
-
-    @Test
-    public void add() {
-        Reporter.log("Starting Add_multifamily_Property test", true);
-
-        driver.get("https://dev.vizismart.com/login");
-        Reporter.log("Navigated to Login page", true);
-
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-
-        // Login
-        driver.findElement(By.cssSelector("input[type='email']")).sendKeys("kalyanideshmukh778+11@gmail.com");
-        Reporter.log("Entered email address", true);
-
-        driver.findElement(By.cssSelector("input[type='password']")).sendKeys("12345678");
-        Reporter.log("Entered password", true);
-
-        driver.findElement(By.cssSelector("button[type='submit']")).click();
-        Reporter.log("Clicked on Login button", true);
-
-        // Click on Property icon
-        WebElement propertyIcon = wait.until(ExpectedConditions.elementToBeClickable(By.id("Properties6")));
-        scrollAndClick(propertyIcon);
-        Reporter.log("Clicked on Property icon", true);
-
-        // MultiFamily radio button
-        WebElement multiFamily = wait.until(ExpectedConditions.elementToBeClickable(By.id("Multi Family")));
-        scrollAndClick(multiFamily);
-        Reporter.log("Clicked on Multi-Family property", true);
-
-        // Address fields
-        scrollAndSendKeys(driver.findElement(By.xpath("//form//input[1]")), "Five Garden plaza");
-        Reporter.log("Entered address", true);
-
-        scrollAndSendKeys(driver.findElement(By.xpath("//form//input[2]")), "Pune");
-        Reporter.log("Entered city", true);
-
-        scrollAndSendKeys(driver.findElement(By.xpath("//form//input[3]")), "Maharashtra");
-        Reporter.log("Entered state", true);
-
-        scrollAndSendKeys(driver.findElement(By.xpath("//form//input[4]")), "411057");
-        Reporter.log("Entered zip code", true);
-
-        // Add units
-        WebElement unit1 = driver.findElement(By.id("add14"));
-        unit1.sendKeys("1");
-
-        WebElement addUnitsBtn = driver.findElement(By.id("add16"));
-        addUnitsBtn.click();
-
-        WebElement unit2 = driver.findElement(By.xpath("//input[@placeholder='Unit #' and @value='']"));
-        unit2.sendKeys("2");
-        Reporter.log("Added 2 units", true);
-
-        // Save
-        WebElement saveBtn = wait.until(ExpectedConditions.elementToBeClickable(By.id("add23")));
-        scrollAndClick(saveBtn);
-        Reporter.log("Clicked on Save button", true);
-
-        // Wait for confirmation or redirection if needed
-        wait.until(ExpectedConditions.invisibilityOf(saveBtn));
-        Reporter.log("Save process completed", true);
-    }
+     }
 }
