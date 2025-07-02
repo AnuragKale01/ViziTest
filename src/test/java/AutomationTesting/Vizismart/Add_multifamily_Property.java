@@ -10,9 +10,11 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Reporter;
 import org.testng.annotations.Test;
 
+
+
 public class Add_multifamily_Property extends BaseTest {
 
-	public void add_multi_family_property() throws InterruptedException {
+	@Test	public void add_multi_family_property() throws InterruptedException {
 //      WebDriverManager.chromedriver().setup();
 //      ChromeDriver driver = new ChromeDriver();
       Reporter.log("ChromeDriver initialized", true);
